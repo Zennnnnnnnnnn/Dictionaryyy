@@ -1,0 +1,14 @@
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+scipy
+plotly
+requests
+beautifulsoup4
+streamlit
+nltk
+openai==0.28
+pyngrok
+sentence_transformers
