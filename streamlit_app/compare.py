@@ -28,6 +28,8 @@ def find_high_similarity_pairs(list1, list2, threshold=0.5):
     embeddings1 = [encode_sentence(desc) for desc in descriptions1]
     embeddings2 = [encode_sentence(desc) for desc in descriptions2]
 
+    # Tính toán ma trận độ tương đồng giữa các embedding
+    similarities = cosine_similarity(embeddings1, embeddings2)
 
     # Khởi tạo danh sách lưu trữ các cặp tương đồng cao
     pairs = []
@@ -52,6 +54,6 @@ def find_high_similarity_pairs(list1, list2, threshold=0.5):
                     'Similarity': similarity
                 })
                 # In ra các cặp có độ tương đồng cao nhất
-                print(f"Added pair: Index_List1={i}, Index_List2={j}, Similarity={similarity:.4f}")
+                #print(f"Added pair: Index_List1={i}, Index_List2={j}, Similarity={similarity:.4f}")
 
     return pairs
