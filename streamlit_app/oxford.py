@@ -34,11 +34,28 @@ def textprocess(chuoi):
     return newchuoi
 
 def text_outside_children(nodecha):
-    full_text = ''.join(nodecha.itertext())
-    for child in nodecha:
-        child_text = ''.join(child.itertext())
-        full_text = full_text.replace(child_text, '')
-    return ' '.join(full_text.split()).strip()
+  full_text = ''.join(nodecha.itertext())   # Get all text within the parent node
+  #print("** full_text = ", full_text) ; 
+  txt_v_s_srf=nodecha.find(".//txt_v_s_srf")
+  txt_v_s_srf_texts=''.join(txt_v_s_srf.itertext()) ;  print ("txt_v_s_srf = ", txt_v_s_srf_texts) # chuỗi các text có dưới tag <txt_v_s_srf>
+  full_text=full_text.replace(txt_v_s_srf_texts,"") ;# loại các text có trong <txt_v_s_srf>: text, tail, con-cháu
+  
+  symbol=nodecha.find(".//txt_v_s_srf")
+  symbol_texts=''.join(symbol.itertext())  # chuỗi các text có dưới tag <symbol>
+  full_text=full_text.replace(symbol_texts,"").replace("","")  # loại các text có trong <symbol>: text, tail, con-cháu
+  #print("** full_text Sau khi loại nghĩa việt = ",full_text)  # loại tag nghĩa tiếng việt ra khỏi chuỗi
+  # Remove text inside any child nodes
+  for child in nodecha:
+    if child.tag == nodecha.tag: continue  # bỏ qua nodecha không xét
+    if child.tag == "dh": continue      # Thông in trong node <dh> là lấy, trong z là lấy, không có bỏ ra
+    if child.tag == "z": continue
+    #print("node con là = ", child.tag)
+    child_text = ''.join(child.itertext()) ; print("** child_text = ", child_text.strip())
+    if child_text ==" " : continue
+    full_text = full_text.replace(child_text, '').replace("‘","").replace("’","")
+    
+  # Clean up and return the result
+  return ' '.join(full_text.split()).strip()
 
 def meaningex(d_ud, root):
     word_type = d_ud.find(".//p-g")
