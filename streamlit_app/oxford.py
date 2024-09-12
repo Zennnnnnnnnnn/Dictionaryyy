@@ -60,21 +60,33 @@ def text_outside_children(nodecha):
 def extract_example_text(node):
     """
     Extracts and processes example text from a given XML node.
-    This function will handle nested elements like <gl>, <xr>, and <xh>.
+    Handles nested elements like <gl>, <xr>, and <xh> correctly.
     """
-    full_text = ''
-    for elem in node.iter():
-        if elem.tag == 'gl':
-            full_text += f"({''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())})"
-        elif elem.tag == 'xr':
-            full_text += f" ({''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())})"
-        elif elem.tag == 'xh':
-            full_text += f"{textprocess(elem.text.strip()) if elem.text else ''}"
-        elif elem.tag == 'x':
-            # Handle <x> specifically, capturing its text and nested elements.
-            full_text += f"{textprocess(elem.text.strip()) if elem.text else ''}"
+    example_text = ''
     
-    return full_text.strip()
+    for elem in node.iter():
+        if elem.tag == 'x':
+            # Process <x> and its content
+            x_text = ''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())
+            example_text += x_text
+        
+        elif elem.tag == 'gl':
+            # Process <gl> and its content
+            gl_text = ''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())
+            example_text += f" ({gl_text})"
+        
+        elif elem.tag == 'xr':
+            # Process <xr> and its content
+            xr_text = ''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())
+            example_text += f" ({xr_text})"
+        
+        elif elem.tag == 'xh':
+            # Process <xh> and its content
+            xh_text = textprocess(elem.text.strip()) if elem.text else ''
+            example_text += f"{xh_text}"
+    
+    return example_text.strip()
+
     
 def meaningex(d_ud, root):
     word_type = d_ud.find(".//p-g")
