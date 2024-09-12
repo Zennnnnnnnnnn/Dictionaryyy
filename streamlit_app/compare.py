@@ -43,25 +43,21 @@ def find_high_similarity_pairs(list1, list2, threshold=0.83):
     embeddings1 = get_embeddings(descriptions1)
     embeddings2 = get_embeddings(descriptions2)
 
-    # Kiểm tra kích thước của các embeddings
     if embeddings1.size == 0 or embeddings2.size == 0:
         raise ValueError("One of the embedding arrays is empty.")
 
-    print(f"Shape of embeddings1: {embeddings1.shape}")
-    print(f"Shape of embeddings2: {embeddings2.shape}")
-
+    # Kiểm tra xem kích thước của các embeddings có khớp không
     if embeddings1.shape[1] != embeddings2.shape[1]:
         raise ValueError("Feature dimensions of embeddings do not match.")
 
     # Tính toán ma trận độ tương đồng giữa các embeddings
-    similarities = cosine_similarity(embeddings1, embeddings2)
-    print("Similarity Matrix:")
-    print(similarities)
+    try:
+        similarities = cosine_similarity(embeddings1, embeddings2)
+    except ValueError as e:
+        raise ValueError(f"Error calculating cosine similarity: {e}")
 
     # In ma trận độ tương đồng với các giá trị > threshold
     filtered_similarities = np.where(similarities > threshold, similarities, 0)
-    print(f"Filtered Similarity Matrix (values > {threshold}):")
-    print(filtered_similarities)
 
     # Khởi tạo danh sách lưu trữ các cặp tương đồng cao
     pairs = []
@@ -90,11 +86,3 @@ def find_high_similarity_pairs(list1, list2, threshold=0.83):
 
     return pairs    # Trả về danh sách các cặp mô tả có độ tương đồng cao
 
-# Giả sử `thongtin` và `dictionary_info` là danh sách các đối tượng với thuộc tính 'Description'
-# Ví dụ sử dụng
-thongtin = [{'Description': 'This is the first description.'}, {'Description': 'Another description here.'}]
-dictionary_info = [{'Description': 'This description is similar.'}, {'Description': 'Totally different description.'}]
-
-# Tìm các cặp mô tả có độ tương đồng lớn hơn 0.83
-similar_pairs = find_high_similarity_pairs(thongtin, dictionary_info)
-print(f"Similar pairs: {similar_pairs}")
