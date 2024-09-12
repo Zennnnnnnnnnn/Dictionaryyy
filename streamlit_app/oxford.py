@@ -56,7 +56,26 @@ def text_outside_children(nodecha):
     
   # Clean up and return the result
   return ' '.join(full_text.split()).strip()
-
+    
+def extract_example_text(node):
+    """
+    Extracts and processes example text from a given XML node.
+    This function will handle nested elements like <gl>, <xr>, and <xh>.
+    """
+    full_text = ''
+    for elem in node.iter():
+        if elem.tag == 'gl':
+            full_text += f"({''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())})"
+        elif elem.tag == 'xr':
+            full_text += f" ({''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())})"
+        elif elem.tag == 'xh':
+            full_text += f"{textprocess(elem.text.strip()) if elem.text else ''}"
+        elif elem.tag == 'x':
+            # Handle <x> specifically, capturing its text and nested elements.
+            full_text += f"{textprocess(elem.text.strip()) if elem.text else ''}"
+    
+    return full_text.strip()
+    
 def meaningex(d_ud, root):
     word_type = d_ud.find(".//p-g")
     if word_type is not None:
@@ -90,12 +109,12 @@ def meaningex(d_ud, root):
             vm = text + tail
 
     ex = []
+    # Extract examples
     vidu = findfather(d_ud, root).findall(".//x")
     for vd in vidu:
-        for i in vd.iter():
-            text = textprocess(i.text.strip()) if i.text else ""
-            tail = textprocess(i.tail.strip()) if i.tail else ""
-            ex.append(text + tail)
+        example_text = extract_example_text(vd)
+        if example_text:
+            ex.append(example_text)
 
     return em, vm, ex
 
