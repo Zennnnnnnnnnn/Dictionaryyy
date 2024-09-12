@@ -62,32 +62,33 @@ def extract_example_text(node):
     Extracts and processes example text from a given XML node.
     Handles nested elements like <gl>, <xr>, and <xh> correctly.
     """
-    example_text = ''
-    
-    for elem in node.iter():
-        if elem.tag == 'x':
-            # Process <x> and its content
-            x_text = ''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())
-            example_text += x_text
-        
-        elif elem.tag == 'gl':
-            # Process <gl> and its content
-            gl_text = ''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())
-            example_text += f" ({gl_text})"
-        
-        elif elem.tag == 'xr':
-            # Process <xr> and its content
-            xr_text = ''.join(textprocess(e.text.strip()) if e.text else '' for e in elem.iter())
-            example_text += f" ({xr_text})"
-        
-        elif elem.tag == 'xh':
-            # Process <xh> and its content
-            xh_text = textprocess(elem.text.strip()) if elem.text else ''
-            example_text += f"{xh_text}"
-    
-    return example_text.strip()
+    # Lấy văn bản bên trong phần tử <x>
+    text_x = node.text.strip() if node.text else ''
 
-    
+    # Tìm phần tử <gl> và lấy toàn bộ nội dung
+    gl_element = node.find('.//gl')
+
+    # Xử lý phần tử <gl> nếu tồn tại
+    if gl_element is not None:
+        # Lấy toàn bộ nội dung của phần tử <gl>, bao gồm cả văn bản và thẻ XML
+        text_gl = ET.tostring(gl_element, encoding='unicode').strip()
+        
+        # Loại bỏ các thẻ XML trong toàn bộ nội dung của <gl> và xóa khoảng trắng dư thừa
+        clean_text_gl = re.sub(r'<[^>]+>', '', text_gl).strip()
+        
+        # Xóa khoảng trắng thừa ở giữa các phần của câu
+        clean_text_gl = re.sub(r'\s+', ' ', clean_text_gl).strip()
+        
+        # Kết hợp văn bản từ các phần tử
+        result = f"{text_x} {clean_text_gl}"
+    else:
+        result = text_x
+
+    # Xóa khoảng trắng thừa ở giữa các phần của câu
+    result = re.sub(r'\s+', ' ', result).strip()
+
+    return result
+
 def meaningex(d_ud, root):
     word_type = d_ud.find(".//p-g")
     if word_type is not None:
