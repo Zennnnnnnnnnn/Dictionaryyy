@@ -71,7 +71,7 @@ def extract_example_text(node):
     # Xử lý phần tử <gl> nếu tồn tại
     if gl_element is not None:
         # Lấy toàn bộ nội dung của phần tử <gl>, bao gồm cả văn bản và thẻ XML
-        text_gl = ET.tostring(gl_element, encoding='unicode').strip()
+        text_gl = et.tostring(gl_element, encoding='unicode').strip()
         
         # Loại bỏ các thẻ XML trong toàn bộ nội dung của <gl> và xóa khoảng trắng dư thừa
         clean_text_gl = re.sub(r'<[^>]+>', '', text_gl).strip()
